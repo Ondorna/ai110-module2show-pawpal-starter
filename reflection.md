@@ -4,13 +4,21 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+I designed four core classes for PawPal+:
+- **Task**: Represents a single pet care activity. It holds attributes like description, time, duration, priority, frequency, and completion status. It can mark itself complete or reschedule to a new time.
+- **Pet**: Represents a pet owned by the user. It stores basic info (name, species, age) and a list of tasks. It can add, remove, and retrieve tasks.
+- **Owner**: Represents the pet owner. It manages a list of pets and can retrieve tasks across all pets or for a specific pet.
+- **Scheduler**: The brain of the system. It connects to the Owner to access all tasks, and handles sorting by time, filtering, conflict detection, and recurring task management.
+
+The relationship is: Scheduler → manages → Owner → owns → Pet(s) → has → Task(s).
+
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+One change I made during design was to the `get_all_tasks()` method in the `Owner` class. Originally I planned a separate method for getting all tasks, but I redesigned it as `get_pet_tasks(pet_name=None)` — a single flexible method that returns all tasks when no name is provided, or only the specified pet's tasks when a name is passed. This made the design cleaner and more reusable.
+
+I also added a `due_date` attribute to the `Task` class during implementation. This was not in the original UML, but was needed to properly support recurring tasks — when a daily or weekly task is completed, the new task needs a calculated next due date based on today's date.
+
 
 ---
 
