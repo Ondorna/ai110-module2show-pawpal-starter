@@ -52,8 +52,7 @@ The scheduler only detects exact time matches as conflicts. For example, two tas
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+Confidence level: ⭐⭐⭐⭐ (4/5). The core behaviors all pass. Edge cases I would test next include: a pet with no tasks, two recurring tasks completing at the same time, and invalid time formats like "8:00" instead of "08:00".
 
 **b. Confidence**
 
