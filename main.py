@@ -44,3 +44,26 @@ if conflicts:
         print(conflict)
 else:
     print("\nNo conflicts detected.")
+
+# Test sort_by_priority
+print("\nTasks sorted by priority:")
+for task in scheduler.sort_by_priority():
+    print(f"- {task.priority.title()} | {task.description} (Pet: {'Mochi' if task in mochi.tasks else 'Luna'})")
+
+# Test filter_tasks for incomplete tasks
+print("\nIncomplete tasks:")
+incomplete_tasks = scheduler.filter_tasks(is_complete=False)
+for task in incomplete_tasks:
+    print(f"- {task.description} (Complete: {task.is_complete})")
+
+# Test handle_recurring_tasks
+print("\nTesting recurring tasks:")
+print(f"Before: Mochi has {len(mochi.tasks)} tasks.")
+walk_task.mark_complete()  # Mark daily task complete
+new_tasks = scheduler.handle_recurring_tasks()
+print(f"After: Mochi has {len(mochi.tasks)} tasks.")
+if new_tasks:
+    for pet, task in new_tasks:
+        print(f"New recurring task created for {pet.name}: {task.description} (Due: {task.due_date})")
+else:
+    print("No new recurring tasks created.")

@@ -26,13 +26,11 @@ I also added a `due_date` attribute to the `Task` class during implementation. T
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+The scheduler considers two main constraints: time (tasks are sorted chronologically so the owner knows what to do first) and priority (high-priority tasks like medications or vet appointments are ranked above low-priority ones like playtime). I decided time mattered most for the daily schedule view, since a pet owner needs to know when to act. Priority matters most when tasks conflict or when the owner needs to choose what to do first.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+The scheduler only detects exact time matches as conflicts. For example, two tasks both at "09:00" will trigger a warning, but a 60-minute task at "09:00" and a task at "09:30" would not be flagged even though they overlap. This tradeoff keeps the logic simple and fast, which is reasonable for a basic pet care app where tasks are generally short and owners can manually adjust if needed.
 
 ---
 

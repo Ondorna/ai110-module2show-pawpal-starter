@@ -74,13 +74,24 @@ class Scheduler:
             tasks = self.owner.get_pet_tasks()
         return sorted(tasks, key=lambda t: t.time)
 
+    def sort_by_priority(self, tasks=None):
+        """
+        Sort tasks by priority: high first, then medium, then low.
+        """
+        if tasks is None:
+            tasks = self.owner.get_pet_tasks()
+        priority_order = {'high': 0, 'medium': 1, 'low': 2}
+        return sorted(tasks, key=lambda t: priority_order.get(t.priority, 3))
+
     def filter_tasks(self, pet_name: Optional[str] = None, is_complete: Optional[bool] = None):
+        # Updated: filter by both pet_name and is_complete if provided
         tasks = self.owner.get_pet_tasks(pet_name)
         if is_complete is not None:
             tasks = [task for task in tasks if task.is_complete == is_complete]
         return tasks
 
     def detect_conflicts(self):
+        # Returns warning messages for tasks scheduled at the same time
         tasks = self.owner.get_pet_tasks()
         time_map = {}
         conflicts = []
@@ -92,6 +103,7 @@ class Scheduler:
         return conflicts
 
     def handle_recurring_tasks(self):
+        # Handles recurring tasks using timedelta for daily/weekly frequencies
         from datetime import datetime, timedelta
         new_tasks = []
         today = datetime.now().date()
