@@ -38,13 +38,11 @@ The scheduler only detects exact time matches as conflicts. For example, two tas
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+I used GitHub Copilot Chat throughout the project by referencing #file:pawpal_system.py in every prompt, which gave Copilot the context it needed to generate accurate code. The most helpful prompts were specific and action-oriented, such as "implement the methods in the Task class" or "add save_to_json and load_from_json to the Owner class." I also used Copilot to generate test cases and add docstrings automatically.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+One moment where I did not accept the AI suggestion as-is was in handle_recurring_tasks(). Copilot's first version used timedelta on the "HH:MM" time string instead of the actual date, which meant adding "1 day" had no real effect on scheduling. I recognized the logic error, rejected the suggestion, and asked Copilot to fix it by using datetime.now().date() as the base. I verified the fix by running main.py and confirming the new task showed the correct next-day due date.
 
 ---
 
@@ -52,12 +50,11 @@ The scheduler only detects exact time matches as conflicts. For example, two tas
 
 **a. What you tested**
 
-Confidence level: ⭐⭐⭐⭐ (4/5). The core behaviors all pass. Edge cases I would test next include: a pet with no tasks, two recurring tasks completing at the same time, and invalid time formats like "8:00" instead of "08:00".
+I tested five core behaviors: task completion status, task addition count, chronological sorting, recurring task creation, and conflict detection. These tests are important because they verify the core logic that the scheduler relies on — if any of these break, the entire daily schedule would be unreliable.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+Confidence level: ⭐⭐⭐⭐ (4/5). The core behaviors all pass. Edge cases I would test next include: a pet with no tasks, two recurring tasks completing at the same time, and invalid time formats like "8:00" instead of "08:00".
 
 ---
 
@@ -65,12 +62,12 @@ Confidence level: ⭐⭐⭐⭐ (4/5). The core behaviors all pass. Edge cases I 
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+I am most satisfied with the Scheduler class, particularly the algorithmic methods like weighted_sort() and find_next_available_slot(). These methods make the app genuinely useful rather than just a simple task list.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+If I had another iteration, I would improve the UI to allow users to mark tasks as complete directly in the browser, and add the ability to add multiple pets from the UI instead of only through code.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+The most important thing I learned is that AI is most effective when you act as the architect — defining the structure and requirements clearly — and let AI handle the implementation details. Without a clear design upfront, AI-generated code can be inconsistent or miss key relationships between classes.

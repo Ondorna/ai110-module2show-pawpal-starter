@@ -67,3 +67,23 @@ if new_tasks:
         print(f"New recurring task created for {pet.name}: {task.description} (Due: {task.due_date})")
 else:
     print("No new recurring tasks created.")
+
+# Test find_next_available_slot
+print("\nNext available 30-minute slot:")
+next_slot = scheduler.find_next_available_slot(30)
+print(f"Next available slot for 30 minutes: {next_slot if next_slot else 'No slot available'}")
+
+# Test weighted_sort
+print("\nTasks sorted by weighted score:")
+for task in scheduler.weighted_sort():
+    print(f"- {task.priority.title()} | {task.time} | {task.description} (Pet: {'Mochi' if task in mochi.tasks else 'Luna'})")
+
+# Test save_to_json and load_from_json
+print("\nSaving owner data to data.json...")
+owner.save_to_json("data.json")
+
+print("Loading owner data from data.json...")
+loaded_owner = Owner.load_from_json("data.json")
+print("Loaded pets and their task counts:")
+for pet in loaded_owner.pets:
+    print(f"- {pet.name}: {len(pet.tasks)} tasks")

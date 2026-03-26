@@ -60,6 +60,67 @@ class Owner:
                     return pet.get_tasks()
             return []
 
+    def save_to_json(self, filepath: str):
+        """
+        Saves all owner, pet, and task data to a JSON file.
+        """
+        import json
+        def task_to_dict(task):
+            return {
+                'task_id': task.task_id,
+                'description': task.description,
+                'time': task.time,
+                'duration': task.duration,
+                'priority': task.priority,
+                'frequency': task.frequency,
+                'is_complete': task.is_complete,
+                'due_date': task.due_date
+            }
+        def pet_to_dict(pet):
+            return {
+                'name': pet.name,
+                'species': pet.species,
+                'age': pet.age,
+                'tasks': [task_to_dict(t) for t in pet.tasks]
+            }
+        data = {
+            'name': self.name,
+            'pets': [pet_to_dict(p) for p in self.pets]
+        }
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    @staticmethod
+    def load_from_json(filepath: str):
+        """
+        Loads owner, pet, and task data from a JSON file and restores the objects.
+        Returns an Owner instance.
+        """
+        import json
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+        owner = Owner(name=data['name'])
+        for pet_data in data.get('pets', []):
+            pet = Pet(
+                name=pet_data['name'],
+                species=pet_data['species'],
+                age=pet_data['age']
+            )
+            for task_data in pet_data.get('tasks', []):
+                task = Task(
+                    task_id=task_data['task_id'],
+                    description=task_data['description'],
+                    time=task_data['time'],
+                    duration=task_data['duration'],
+                    priority=task_data['priority'],
+                    frequency=task_data['frequency'],
+                    is_complete=task_data.get('is_complete', False),
+                    due_date=task_data.get('due_date')
+                )
+                pet.add_task(task)
+            owner.add_pet(pet)
+        return owner
+
 
 class Scheduler:
     def __init__(self, owner: Owner):
@@ -128,3 +189,45 @@ class Scheduler:
         for pet, task in new_tasks:
             pet.add_task(task)
         return new_tasks
+
+    def find_next_available_slot(self, duration: int) -> str:
+        """
+        Finds the next available time slot in the day that has no task scheduled, given a duration in minutes.
+        Returns the start time as "HH:MM" string. Assumes the day starts at 06:00 and ends at 22:00.
+        """
+        from datetime import datetime, timedelta
+        tasks = self.sort_by_time()
+        day_start = datetime.strptime("06:00", "%H:%M")
+        day_end = datetime.strptime("22:00", "%H:%M")
+        # Build list of (start, end) for all tasks
+        intervals = []
+        for t in tasks:
+            start = datetime.strptime(t.time, "%H:%M")
+            end = start + timedelta(minutes=t.duration)
+            intervals.append((start, end))
+        # Check before first task
+        current = day_start
+        for start, end in intervals:
+            if (start - current).total_seconds() / 60 >= duration:
+                return current.strftime("%H:%M")
+            current = max(current, end)
+        # Check after last task
+        if (day_end - current).total_seconds() / 60 >= duration:
+            return current.strftime("%H:%M")
+        return None
+
+    def weighted_sort(self, tasks=None):
+        """
+        Sorts tasks by a weighted score combining priority and time.
+        High priority = 3 points, medium = 2, low = 1. Earlier time = higher score.
+        Returns tasks sorted by weighted score descending.
+        """
+        if tasks is None:
+            tasks = self.owner.get_pet_tasks()
+        priority_score = {'high': 3, 'medium': 2, 'low': 1}
+        def score(t):
+            # Earlier time = higher score, so subtract minutes from 1440 (max minutes in a day)
+            h, m = map(int, t.time.split(":"))
+            time_score = 1440 - (h * 60 + m)
+            return priority_score.get(t.priority, 0) * 10000 + time_score
+        return sorted(tasks, key=score, reverse=True)
